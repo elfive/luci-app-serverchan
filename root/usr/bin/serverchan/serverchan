@@ -773,7 +773,7 @@ function send(){
 		if [ ! -z "$block_unknown" ] && [ "$block_unknown" -eq "1" ] ; then
 			for ip in $IPLIST; do
 				local name=$( cat ${dir}ipAddress | grep -w $ip | awk '{print $3}' | grep -v "^$" | sort -u )
-				if [ ! -z "$name" ] && [ "$name" != "unknown" ] ; then
+				if [ ! -z "$name" ] && [ [ "$name" != "unknown" ] || [ "$name" != "未知设备" ] ] ; then
 					local ip_total=`usage_ip $ip` && if [ ! -z "$ip_total" ] ; then ip_total="总计流量：$ip_total  ";fi
 					local time_down=`date +%s`
 					local time_up=$( cat ${dir}ipAddress | grep -w $ip |awk '{print $4}' | grep -v "^$" | sort -u )
@@ -786,14 +786,17 @@ function send(){
 				fi
 			done
 		else
-			for  ip in $IPLIST; do
-				name=$( cat ${dir}ipAddress | grep -w $ip | awk '{print $3}' | grep -v "^$" | sort -u )
-				ip_total=`usage_ip $ip` && if [ ! -z "$ip_total" ] ; then ip_total="总计流量：$ip_total  ";fi
-				time_down=`date +%s`
-				time_up=$( cat ${dir}ipAddress | grep -w $ip | awk '{print $4}' | grep -v "^$" | sort -u )
-				time1=$(($time_down-$time_up))
-				time1=`time_for_humans $time1`
-				send_content=${send_content}"%0D%0A%0D%0A""     $name  $ip%0D%0A%0D%0A""     $ip_total在线 $time1"
+			for ip in $IPLIST; do
+				local name=$( cat ${dir}ipAddress | grep -w $ip | awk '{print $3}' | grep -v "^$" | sort -u )
+				local ip_total=`usage_ip $ip` && if [ ! -z "$ip_total" ] ; then ip_total="总计流量：$ip_total  ";fi
+				local time_down=`date +%s`
+				local time_up=$( cat ${dir}ipAddress | grep -w $ip | awk '{print $4}' | grep -v "^$" | sort -u )
+				local time1=$(($time_down-$time_up))
+				local time1=`time_for_humans $time1`
+				local ip_mac=`getmac $ip`
+				local ip_name=`getname $ip $ip_mac`
+				if [ "${#ip_name}" -gt  "20" ] ; then local ip_name=`echo ${ip_name:0:20}"*"`;fi
+				local send_content=${send_content}"%0D%0A%0D%0A""     $name  $ip%0D%0A%0D%0A""     $ip_total在线 $time1"
 			done
 		fi
 	fi
