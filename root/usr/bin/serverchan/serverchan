@@ -594,7 +594,7 @@ function current_device(){
 	
 # 获取SOC温度
 function soc_temp(){
-	cat /sys/class/thermal/thermal_zone*/temp | sort | sed '$!d' | cut -c-2 2>/dev/null
+	cpuinfo | cut -d'+' -f 2  | sed 's/.\{5\}$//'
 }
 
 # 检测 cpu 状态
