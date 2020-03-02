@@ -58,8 +58,8 @@ device_aliases.description = translate("<br/> 请输入设备 MAC 和设备别�
 local logfile = "/tmp/serverchan/serverchan.log" 
 
 e=s:taboption("log",TextValue,"log")
-e:depends({debuglevel="1"})
-e:depends({debuglevel="2"})
+-- e:depends({debuglevel="1"})
+-- e:depends({debuglevel="2"})
 e.rows=26
 e.wrap="off"
 e.readonly=true
@@ -70,8 +70,8 @@ e.write=function(e,e,e)
 end
 
 e=s:taboption("log", Button,translate(""))
-e:depends({debuglevel="1"})
-e:depends({debuglevel="2"})
+-- e:depends({debuglevel="1"})
+-- e:depends({debuglevel="2"})
 e.inputtitle=translate("清理日志")
 e.inputstyle = "clean_log"
 function e.write(self, section)
@@ -80,7 +80,7 @@ luci.sys.call("cbi.clean_log")
 	fs.writefile(logfile, "")
 end
 
-a=s:taboption("tab_basic2", ListValue,"serverchan_ipv4",translate("ipv4 变动通知"))
+a=s:taboption("tab_basic2", ListValue,"serverchan_ipv4",translate("IPv4 变动通知"))
 a.default="disable"
 a:value("0",translate("关闭"))
 a:value("1",translate("通过接口获取"))
@@ -98,14 +98,14 @@ for _, iface in ipairs(ifaces) do
 		a:value(iface, ((#nets > 0) and "%s (%s)" % {iface, nets} or iface))
 	end
 end
-a.description = translate("<br/>一般选择 wan 接口，多拨环境请自行选择")
-a= s:taboption("tab_basic2", Value, "ipv4_URL", "URL 地址")
+-- a.description = translate("<br/>一般选择 wan 接口，多拨环境请自行选择")
+a= s:taboption("tab_basic2", Value, "ipv4_URL", "IPv4地址检测URL")
 a.rmempty = true 
 a.default = "v4.ipv6-test.com/api/myip.php"
 -- a:depends({serverchan_ipv4="2"})
-a.description = translate("<br/>会因服务器稳定性/连接频繁等原因导致获取失败，一般不推荐")
+-- a.description = translate("<br/>会因服务器稳定性/连接频繁等原因导致获取失败，一般不推荐")
 
-a=s:taboption("tab_basic2", ListValue,"serverchan_ipv6",translate("ipv6 变动通知"))
+a=s:taboption("tab_basic2", ListValue,"serverchan_ipv6",translate("IPv6 变动通知"))
 a.default="disable"
 a:value("0",translate("关闭"))
 a:value("1",translate("通过接口获取"))
@@ -123,12 +123,12 @@ for _, iface in ipairs(ifaces) do
 		a:value(iface, ((#nets > 0) and "%s (%s)" % {iface, nets} or iface))
 	end
 end
-a.description = translate("<br/>一般选择 wan 接口，多拨环境请自行选择")
-a= s:taboption("tab_basic2", Value, "ipv6_URL", "URL 地址")
+-- a.description = translate("<br/>一般选择 wan 接口，多拨环境请自行选择")
+a= s:taboption("tab_basic2", Value, "ipv6_URL", "IPv6地址检测URL")
 a.rmempty = true 
 a.default = "v6.ipv6-test.com/api/myip.php"
 -- a:depends({serverchan_ipv6="2"})
-a.description = translate("<br/>会因服务器稳定性/连接频繁等原因导致获取失败，一般不推荐")
+-- a.description = translate("<br/>会因服务器稳定性/连接频繁等原因导致获取失败，一般不推荐")
 
 a=s:taboption("tab_basic2", Flag,"serverchan_up",translate("设备上线通知"))
 a.default=0
