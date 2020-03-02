@@ -125,7 +125,7 @@ function serverchan_cron(){
 		fi
 	fi		
 	/etc/init.d/cron stop
-	/etc/init.d/cron start	
+	/etc/init.d/cron start
 }
 
 # 免打扰检测
@@ -209,7 +209,7 @@ function bytes_for_humans {
 		fi
 	else
 		echo 0 bytes
-    fi
+	fi
 }
 
 # 时间单位换算
@@ -237,7 +237,7 @@ function time_for_humans {
 		fi
 	else
 		echo 0 秒
-    fi
+	fi
 }
 
 # 流量数据
@@ -565,7 +565,12 @@ function current_device(){
 	local content=`cat ${dir}content`
 	if [ -f ${dir}usage.db ] ; then local ip_total_db="总计流量%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b";fi
 	content="%0D%0A%0D%0A---%0D%0A%0D%0A####现有在线设备 `grep -c "" ${dir}ipAddress` 台，具体如下%0D%0A%0D%0A#####IP 地址%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_total_db客户端名"
-	local IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
+	local block_unknown=`get_config block_unknown`
+	if [ ! -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ]; then
+		local IPLIST=$( cat ${dir}ipAddress | grep -v unknown | awk '{print $1}' )
+	else
+		local IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
+	fi
 	for ip in $IPLIST; do
 		local ip_total=`usage_ip $ip`
 		local ip_mac=`getmac $ip`
@@ -578,7 +583,7 @@ function current_device(){
 		done
 		unset i && unset n
 		
-		if [ ! -z "$ip_total" ] ; then	
+		if [ ! -z "$ip_total" ] ; then
 			n=`expr 12 - ${#ip_total}`
 			for i in `seq 1 $n` 
 			do
@@ -591,7 +596,7 @@ function current_device(){
 	done
 	echo -n $content >>${dir}content
 }
-	
+
 # 获取SOC温度
 function soc_temp(){
 	cpuinfo | cut -d'+' -f 2  | sed 's/.\{5\}$//'
@@ -701,12 +706,12 @@ function send(){
 	if [ -z "$send_title" ] ; then local send_title="路由状态：";fi
 	local router_status=`get_config router_status`
 		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 系统运行状态%0D%0A%0D%0A";fi
-		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""     平均负载：`cat /proc/loadavg | awk '{print $1" "$2" "$3}'`";fi
-		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""     CPU占用：`getcpu`";fi
-		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""     内存占用：`free -m | sed -n '2p' | awk '{print""($3/$2)*100"%"}'`";fi
-		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""`cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     运行时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`";fi
+		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""	 平均负载：`cat /proc/loadavg | awk '{print $1" "$2" "$3}'`";fi
+		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""	 CPU占用：`getcpu`";fi
+		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""	 内存占用：`free -m | sed -n '2p' | awk '{print""($3/$2)*100"%"}'`";fi
+		if [ ! -z "$router_status" ] && [ "$router_status" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""`cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("	 运行时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`";fi
 	local router_temp=`get_config router_temp`
-		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A     CPU：`soc_temp`%e2%84%83";fi
+		if [ ! -z "$router_temp" ] && [ "$router_temp" -eq "1" ] ; then local send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### 设备温度%0D%0A%0D%0A	 CPU：`soc_temp`%e2%84%83";fi
 	local router_wan=`get_config router_wan`
 	local ipv4_interface=$(get_config ipv4_interface)
 	local ipv6_interface=$(get_config ipv6_interface)
@@ -723,16 +728,16 @@ function send(){
 		if [ ! -z "$ipv6_interface" ] ; then local send_hostIPv6=$(curl -k -s -6 --interface $send_wanIPv6 $ipv6_URL);fi
 		if [ -z "$ipv6_interface" ] ; then local send_hostIPv6=$(curl -k -s -6 $ipv6_URL);fi
 		if [ ! -z "$router_wan" ] && [ "$router_wan" -eq "1" ] ; then
-			local send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A     接口ip:$send_wanIP"
-			local send_content=${send_content}"%0D%0A%0D%0A""     外网ip:$send_hostIP"
-			local send_content=${send_content}"%0D%0A%0D%0A""     ipv6 :$send_wanIPv6"
-			local send_content=${send_content}"%0D%0A%0D%0A""     外网v6:$send_hostIPv6"
+			local send_content=${send_content}"%0D%0A%0D%0A""---%0D%0A%0D%0A#### WAN 口信息%0D%0A%0D%0A	 接口ip:$send_wanIP"
+			local send_content=${send_content}"%0D%0A%0D%0A""	 外网ip:$send_hostIP"
+			local send_content=${send_content}"%0D%0A%0D%0A""	 ipv6 :$send_wanIPv6"
+			local send_content=${send_content}"%0D%0A%0D%0A""	 外网v6:$send_hostIPv6"
 			if [ ! -z "$send_content" ] && [ ! -z "$router_wan" ] ; then
-				if ( ! echo ${send_wanIP} | grep -q -w ${send_hostIP} );then local send_content=${send_content}"%0D%0A%0D%0A""     外网 ip 与接口 ip 不一致，你的 ip 不是公网 ip";fi
+				if ( ! echo ${send_wanIP} | grep -q -w ${send_hostIP} );then local send_content=${send_content}"%0D%0A%0D%0A""	 外网 ip 与接口 ip 不一致，你的 ip 不是公网 ip";fi
 			else
-				local send_content=${send_content}"%0D%0A%0D%0A""     ip 获取失败"
+				local send_content=${send_content}"%0D%0A%0D%0A""	 ip 获取失败"
 			fi
-			local send_content=${send_content}"%0D%0A%0D%0A""`ubus call network.interface.wan status | grep \"uptime\" | sed $'s/\"uptime": //g'| sed $'s/\,//g'| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("     在线时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`"
+			local send_content=${send_content}"%0D%0A%0D%0A""`ubus call network.interface.wan status | grep \"uptime\" | sed $'s/\"uptime": //g'| sed $'s/\,//g'| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("	 在线时间：%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}'`"
 		fi
 	local client_list=`get_config client_list`
 		if [ ! -z "$client_list" ] && [ "$client_list" -eq "1" ] ; then		
@@ -770,7 +775,7 @@ function send(){
 				local ip_mac=`getmac $ip`
 				local ip_name=`getname $ip $ip_mac`
 				if [ "${#ip_name}" -gt  "20" ] ; then local ip_name=`echo ${ip_name:0:20}"*"`;fi
-				local send_content=${send_content}"%0D%0A%0D%0A     $ip_name  $ip%0D%0A%0D%0A     $ip_total在线 $time1%0D%0A%0D%0A    ----"
+				local send_content=${send_content}"%0D%0A%0D%0A	 $ip_name  $ip%0D%0A%0D%0A	 $ip_total在线 $time1%0D%0A%0D%0A	----"
 			done
 		fi
 	if [ ! -z "$device_name" ] ; then local send_title="【$device_name】$send_title" ;fi
