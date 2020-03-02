@@ -564,9 +564,14 @@ fi
 function current_device(){
 	local content=`cat ${dir}content`
 	if [ -f ${dir}usage.db ] ; then local ip_total_db="总计流量%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b";fi
-	content="%0D%0A%0D%0A---%0D%0A%0D%0A####现有在线设备 `grep -c "" ${dir}ipAddress` 台，具体如下%0D%0A%0D%0A#####IP 地址%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_total_db客户端名"
 	local block_unknown=`get_config block_unknown`
-	if [ -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ]; then
+	if [ ! -z "$block_unknown" ] && [ "$block_unknown" -eq "1" ]; then
+		local online_count=$( grep -v unknown ${dir}ipAddress | grep -c "" )
+	else
+		local online_count=$( grep -c "" ${dir}ipAddress )
+	fi
+	content="%0D%0A%0D%0A---%0D%0A%0D%0A####现有在线设备 $online_count 台，具体如下%0D%0A%0D%0A#####IP 地址%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_total_db客户端名"
+	if [ ! -z "$block_unknown" ] && [ "$block_unknown" -eq "1" ]; then
 		local IPLIST=$( cat ${dir}ipAddress | grep -v unknown | awk '{print $1}' )
 	else
 		local IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
@@ -765,7 +770,12 @@ function send(){
 			local send_content=${send_content}"%0D%0A%0D%0A---%0D%0A%0D%0A#### 在线设备%0D%0A%0D%0A";
 			
 			unset IPLIST
-			local IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
+			local block_unknown=`get_config block_unknown`
+			if [ ! -z "$block_unknown" ] && [ "$block_unknown" -eq "1" ]; then
+				local IPLIST=$( cat ${dir}ipAddress | grep -v unknown | awk '{print $1}' )
+			else
+				local IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
+			fi
 			for ip in $IPLIST; do
 				local ip_total=`usage_ip $ip` && if [ ! -z "$ip_total" ] ; then local ip_total="总计流量：$ip_total  ";fi
 				local time_down=`date +%s`
