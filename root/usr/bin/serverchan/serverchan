@@ -566,7 +566,7 @@ function current_device(){
 	if [ -f ${dir}usage.db ] ; then local ip_total_db="总计流量%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b";fi
 	content="%0D%0A%0D%0A---%0D%0A%0D%0A####现有在线设备 `grep -c "" ${dir}ipAddress` 台，具体如下%0D%0A%0D%0A#####IP 地址%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b%26ensp%3b$ip_total_db客户端名"
 	local block_unknown=`get_config block_unknown`
-	if [ ! -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ]; then
+	if [ -z "$serverchan_enable" ] && [ "$serverchan_enable" -eq "1" ]; then
 		local IPLIST=$( cat ${dir}ipAddress | grep -v unknown | awk '{print $1}' )
 	else
 		local IPLIST=$( cat ${dir}ipAddress | awk '{print $1}' )
