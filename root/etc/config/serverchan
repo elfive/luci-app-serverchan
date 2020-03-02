@@ -10,6 +10,5 @@ config serverchan 'serverchan'
 	option temperature_enable '0'
 	option up_timeout '2'
 	option down_timeout '10'
-	option block_unknown '0'
 	option serverchan_sheep '0'
 
