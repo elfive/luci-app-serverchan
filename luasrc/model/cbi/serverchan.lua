@@ -80,12 +80,12 @@ luci.sys.call("cbi.clean_log")
 	fs.writefile(logfile, "")
 end
 
-a=s:taboption("tab_basic2", ListValue,"serverchan_ipv4",translate("IPv4 变动通知"))
+a=s:taboption("tab_basic2", ListValue,"serverchan_ipv4",translate("IPv4变动通知"))
 a.default="disable"
 a:value("0",translate("关闭"))
 a:value("1",translate("通过接口获取"))
 a:value("2",translate("通过URL获取"))
-a = s:taboption("tab_basic2", ListValue, "ipv4_interface", translate("接口名称"))
+a = s:taboption("tab_basic2", ListValue, "ipv4_interface", translate("IPv4接口名称"))
 -- a:depends({serverchan_ipv4="1"})
 for _, iface in ipairs(ifaces) do
 	if not (iface == "lo" or iface:match("^ifb.*")) then
@@ -105,12 +105,12 @@ a.default = "v4.ipv6-test.com/api/myip.php"
 -- a:depends({serverchan_ipv4="2"})
 -- a.description = translate("<br/>会因服务器稳定性/连接频繁等原因导致获取失败，一般不推荐")
 
-a=s:taboption("tab_basic2", ListValue,"serverchan_ipv6",translate("IPv6 变动通知"))
+a=s:taboption("tab_basic2", ListValue,"serverchan_ipv6",translate("IPv6变动通知"))
 a.default="disable"
 a:value("0",translate("关闭"))
 a:value("1",translate("通过接口获取"))
 a:value("2",translate("通过URL获取"))
-a = s:taboption("tab_basic2", ListValue, "ipv6_interface", translate("接口名称"))
+a = s:taboption("tab_basic2", ListValue, "ipv6_interface", translate("IPv6接口名称"))
 -- a:depends({serverchan_ipv6="1"})
 for _, iface in ipairs(ifaces) do
 	if not (iface == "lo" or iface:match("^ifb.*")) then
