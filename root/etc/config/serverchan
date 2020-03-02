@@ -11,4 +11,5 @@ config serverchan 'serverchan'
 	option up_timeout '2'
 	option down_timeout '10'
 	option serverchan_sheep '0'
+	option block_unknown '0'
 
